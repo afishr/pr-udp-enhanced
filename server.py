@@ -1,30 +1,40 @@
 import socket
+import sys
 
-localIP = "127.0.0.1"
-localPort = 20001
-bufferSize = 1024
+HOST = ''	# Symbolic name meaning all available interfaces
+PORT = 8888	# Arbitrary non-privileged port
 
-msgFromServer = "Hello UDP Client"
-bytesToSend = str.encode(msgFromServer)
+# Datagram (udp) socket
+try :
+	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	print('Socket created')
+except socket.error as msg :
+	print('Failed to create socket. Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
+	sys.exit()
 
-# Create a datagram socket
-UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
-# Bind to address and ip
-UDPServerSocket.bind((localIP, localPort))
+# Bind socket to local host and port
+try:
+	s.bind((HOST, PORT))
+except socket.error as msg:
+	print('Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
+	sys.exit()
+	
+print('Socket bind complete')
 
-print("UDP server up and listening")
-
-# Listen for incoming datagrams
-while(True):
-  bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-  message = bytesAddressPair[0]
-  address = bytesAddressPair[1]
-  clientMsg = "Message from Client:{}".format(message)
-  clientIP  = "Client IP Address:{}".format(address)
-  
-  print(clientMsg)
-  print(clientIP)
-
-  # Sending a reply to client
-  UDPServerSocket.sendto(bytesToSend, address)
+#now keep talking with the client
+while 1:
+	# receive data from client (data, addr)
+	d = s.recvfrom(1024)
+	data = d[0]
+	addr = d[1]
+	
+	if not data: 
+		break
+	
+	reply = data
+	
+	s.sendto(reply , addr)
+	print(addr[0], str(addr[1]), data.strip())
+	
+s.close()

@@ -1,18 +1,30 @@
-import socket
+import socket	#for sockets
+import sys	#for exit
 
-msgFromClient = "Hello UDP Server"
-bytesToSend = str.encode(msgFromClient)
-serverAddressPort = ("127.0.0.1", 20001)
-bufferSize = 1024
+# create dgram udp socket
+try:
+	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+except socket.error:
+	print('Failed to create socket')
+	sys.exit()
 
-# Create a UDP socket at client side
-UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+host = 'localhost';
+port = 8888;
 
-# Send to server using created UDP socket
-UDPClientSocket.sendto(bytesToSend, serverAddressPort)
-
-msgFromServer = UDPClientSocket.recvfrom(bufferSize)
-
-msg = "Message from Server {}".format(msgFromServer[0])
-
-print(msg)
+while(1) :
+	msg = input('Enter message to send : ')
+	
+	try :
+		#Set the whole string
+		s.sendto(str.encode(msg), (host, port))
+		
+		# receive data from client (data, addr)
+		d = s.recvfrom(1024)
+		reply = d[0]
+		addr = d[1]
+		
+		print(b'Server reply : ' + reply)
+	
+	except socket.error as msg:
+		print('Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
+		sys.exit()
