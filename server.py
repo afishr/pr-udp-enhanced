@@ -1,40 +1,22 @@
 import socket
-import sys
+from protocol import Protocol
 
-HOST = ''	# Symbolic name meaning all available interfaces
-PORT = 8888	# Arbitrary non-privileged port
+PORT = 8888
 
-# Datagram (udp) socket
-try :
-	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	print('Socket created')
-except socket.error as msg :
-	print('Failed to create socket. Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
-	sys.exit()
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+prot = Protocol(s)
+prot.open(PORT)
 
-
-# Bind socket to local host and port
-try:
-	s.bind((HOST, PORT))
-except socket.error as msg:
-	print('Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
-	sys.exit()
-	
-print('Socket bind complete')
-
-#now keep talking with the client
 while 1:
-	# receive data from client (data, addr)
-	d = s.recvfrom(1024)
-	data = d[0]
-	addr = d[1]
-	
-	if not data: 
+	data, addr = prot.read()
+
+	if not data:
 		break
-	
+
 	reply = data
-	
-	s.sendto(reply , addr)
+
+	prot.write(reply, addr)
+
 	print(addr[0], str(addr[1]), data.strip())
-	
-s.close()
+
+prot.close()

@@ -1,30 +1,18 @@
 import socket	#for sockets
-import sys	#for exit
+from protocol import Protocol
 
 # create dgram udp socket
-try:
-	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-except socket.error:
-	print('Failed to create socket')
-	sys.exit()
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+prot = Protocol(s)
 
-host = 'localhost';
+host = 'localhost'
 port = 8888;
 
-while(1) :
+while 1:
 	msg = input('Enter message to send : ')
-	
-	try :
-		#Set the whole string
-		s.sendto(str.encode(msg), (host, port))
-		
-		# receive data from client (data, addr)
-		d = s.recvfrom(1024)
-		reply = d[0]
-		addr = d[1]
-		
-		print(b'Server reply : ' + reply)
-	
-	except socket.error as msg:
-		print('Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
-		sys.exit()
+
+	prot.write(msg.encode(), (host, port))
+
+	reply, addr = prot.read()
+
+	print(b'Server reply : ' + reply)
