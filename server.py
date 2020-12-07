@@ -8,15 +8,18 @@ prot = Protocol(s)
 prot.open(PORT)
 
 while 1:
-	data, addr = prot.read()
+  data, addr, error = prot.read()
 
-	if not data:
-		break
+  if error == 1:
+    print('Error code 1. Data does not corresponds to checksum')
+  else:
+    if not data:
+      break
 
-	reply = data
+    reply = data
 
-	prot.write(reply, addr)
+    prot.write(reply.decode(), addr)
 
-	print(addr[0], str(addr[1]), data.strip())
+    print(addr[0], str(addr[1]), data)
 
 prot.close()

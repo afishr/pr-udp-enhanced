@@ -9,10 +9,13 @@ host = 'localhost'
 port = 8888;
 
 while 1:
-	msg = input('Enter message to send : ')
+  msg = input('Enter message to send : ')
 
-	prot.write(msg.encode(), (host, port))
+  prot.write(msg, (host, port))
 
-	reply, addr = prot.read()
+  reply, addr, error = prot.read()
 
-	print(b'Server reply : ' + reply)
+  if (error == 1):
+    print('Error code 1. Data does not corresponds to checksum')
+  else:
+    print(reply)
