@@ -55,8 +55,8 @@ class Protocol:
 
   def __sign(self, payload):
     data = json.dumps({
-      "data": payload,
-      "checksum": hashlib.md5(payload.encode()).hexdigest()
+      'data': payload,
+      'checksum': hashlib.md5(payload.encode()).hexdigest()
     }).encode()
 
     return data
@@ -83,6 +83,5 @@ class Protocol:
     for i in range(len(string)):
       encoded_c = chr(ord(string[i]) - key % 256)
       decoded_chars.append(encoded_c)
-    encoded_string = "".join(decoded_chars)
+    decoded_chars = "".join(decoded_chars)
     return ''.join(decoded_chars)
-
